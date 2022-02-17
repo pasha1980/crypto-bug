@@ -13,8 +13,9 @@ type Binance struct {
 }
 
 type BinancePriceResponse struct {
-	Symbol string `json:"symbol"`
-	Price  string `json:"price"`
+	Symbol  string `json:"symbol"`
+	Price   string `json:"price"`
+	Message string `json:"msg"`
 }
 
 func (binance Binance) Save(track string, base string) {
@@ -23,12 +24,18 @@ func (binance Binance) Save(track string, base string) {
 	symbol := track + base
 	client := rootConfig.Client
 	responseRaw, err := client.Get("https://api.binance.com/api/v3/ticker/price?symbol=" + symbol)
-	if err != nil || responseRaw == nil {
+	if err != nil {
 		log.Println("Binance connection error. Message: " + err.Error())
+		return
 	}
 
 	defer responseRaw.Body.Close()
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
+
+	if responseRaw.StatusCode != 200 {
+		log.Println("Binance return error message: " + response.Message)
+		return
+	}
 
 	priceFloat, _ := strconv.ParseFloat(response.Price, 64)
 
