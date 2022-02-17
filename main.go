@@ -11,7 +11,7 @@ import (
 func main() {
 	config.Initialization()
 	migrations.Migrate()
-	for range time.Tick(time.Minute) {
+	for range time.Tick(time.Second * config.RestartSeconds) {
 		go quote.Init()
 		go parser.Init()
 	}
