@@ -5,13 +5,24 @@ import (
 	"crypto-bug/migrations"
 	"crypto-bug/parser"
 	"crypto-bug/quote"
+	"log"
+	"os"
 	"time"
 )
 
 func main() {
 	config.Initialization()
 	migrations.Migrate()
-	for range time.Tick(time.Second * config.RestartSeconds) {
+	repeat, err := time.ParseDuration(os.Getenv("REPEAT_TIME"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if repeat == 0 {
+		repeat = time.Minute
+	}
+
+	for range time.Tick(repeat) {
 		go quote.Init()
 		go parser.Init()
 	}
