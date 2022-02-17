@@ -23,4 +23,6 @@ var Exchanges = []exchages.Exchange{
 	exchages.Binance{},
 	exchages.WhiteBit{},
 	exchages.Coinlist{},
+	exchages.ByBit{},
+	exchages.Huobi{},
 }
