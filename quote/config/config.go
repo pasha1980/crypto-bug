@@ -22,4 +22,5 @@ var BaseCurrencies = []string{
 var Exchanges = []exchages.Exchange{
 	exchages.Binance{},
 	exchages.WhiteBit{},
+	exchages.Coinlist{},
 }

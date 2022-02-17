@@ -12,14 +12,14 @@ import (
 type Binance struct {
 }
 
-type BinancePriceResponse struct {
+type BinanceResponse struct {
 	Symbol  string `json:"symbol"`
 	Price   string `json:"price"`
 	Message string `json:"msg"`
 }
 
 func (binance Binance) Save(track string, base string) {
-	var response BinancePriceResponse
+	var response BinanceResponse
 
 	symbol := track + base
 	client := rootConfig.Client
