@@ -1,7 +1,7 @@
 package quote
 
 import (
-	config2 "crypto-bug/config"
+	rootConfig "crypto-bug/config"
 	"crypto-bug/quote/config"
 	"time"
 )
@@ -25,7 +25,7 @@ WHERE date < ?
 `
 
 func ClearQuotes() {
-	db := config2.Database
+	db := rootConfig.Database
 	date := time.Now().Add(-(time.Hour * config.HoursToSaveQuotes))
 	db.Exec(clearQuotesSql, date)
 }
