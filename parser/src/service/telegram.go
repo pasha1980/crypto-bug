@@ -9,8 +9,8 @@ import (
 )
 
 type TelegramMessage struct {
-	Text   string
-	ChatId string
+	Text   string `json:"text"`
+	ChatId string `json:"chat_id"`
 }
 
 type TelegramResponse struct {
