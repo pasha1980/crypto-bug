@@ -40,7 +40,7 @@ func (binance Binance) Save(track string, base string) {
 	priceFloat, _ := strconv.ParseFloat(response.Price, 64)
 
 	quote := model.Quote{
-		Exchange:         "Binance",
+		Exchange:         binance.GetName(),
 		Date:             time.Now(),
 		BaseCurrency:     base,
 		TrackingCurrency: track,
@@ -49,4 +49,8 @@ func (binance Binance) Save(track string, base string) {
 
 	db := rootConfig.Database
 	db.Save(&quote)
+}
+
+func (binance Binance) GetName() string {
+	return "Binance"
 }

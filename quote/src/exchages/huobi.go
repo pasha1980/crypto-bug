@@ -45,7 +45,7 @@ func (huobi Huobi) Save(track string, base string) {
 	}
 
 	quote := model.Quote{
-		Exchange:         "Huobi",
+		Exchange:         huobi.GetName(),
 		Date:             time.Now(),
 		BaseCurrency:     base,
 		TrackingCurrency: track,
@@ -54,4 +54,8 @@ func (huobi Huobi) Save(track string, base string) {
 
 	db := rootConfig.Database
 	db.Save(&quote)
+}
+
+func (huobi Huobi) GetName() string {
+	return "Huobi"
 }

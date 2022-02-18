@@ -43,7 +43,7 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 	priceFloat, _ := strconv.ParseFloat(response.Result[0].Price, 64)
 
 	quote := model.Quote{
-		Exchange:         "WhiteBit",
+		Exchange:         whiteBit.GetName(),
 		Date:             time.Now(),
 		BaseCurrency:     base,
 		TrackingCurrency: track,
@@ -52,4 +52,8 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 
 	db := rootConfig.Database
 	db.Save(&quote)
+}
+
+func (whiteBit WhiteBit) GetName() string {
+	return "WhiteBit"
 }

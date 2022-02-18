@@ -42,7 +42,7 @@ func (coinist Coinlist) Save(track string, base string) {
 	priceFloat, _ := strconv.ParseFloat(response.LastTrade.Price, 64)
 
 	quote := model.Quote{
-		Exchange:         "Coinlist",
+		Exchange:         coinist.GetName(),
 		Date:             time.Now(),
 		BaseCurrency:     base,
 		TrackingCurrency: track,
@@ -51,4 +51,8 @@ func (coinist Coinlist) Save(track string, base string) {
 
 	db := rootConfig.Database
 	db.Save(&quote)
+}
+
+func (coinlist Coinlist) GetName() string {
+	return "Coinlist"
 }
