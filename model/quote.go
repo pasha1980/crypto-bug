@@ -7,9 +7,9 @@ import (
 
 type Quote struct {
 	gorm.Model
-	Exchange         string
-	Date             time.Time
-	BaseCurrency     string
-	TrackingCurrency string
-	Value            float64
+	Exchange      string
+	Date          time.Time
+	BaseCurrency  string
+	TrackCurrency string
+	Value         float64
 }

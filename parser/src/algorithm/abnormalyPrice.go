@@ -5,7 +5,9 @@ import (
 	"crypto-bug/model"
 	"crypto-bug/parser/src/service"
 	quoteConfig "crypto-bug/quote/config"
+	"errors"
 	"fmt"
+	"gorm.io/gorm"
 )
 
 type AbnormallyPriceAlgorithm struct {
@@ -26,18 +28,20 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 		for _, trackCurrency := range quoteConfig.CurrenciesToTrack {
 			for _, baseCurrency := range quoteConfig.BaseCurrencies {
 				query := db.Where(&model.Quote{
-					Exchange:         exchange.GetName(),
-					BaseCurrency:     baseCurrency,
-					TrackingCurrency: trackCurrency,
+					Exchange:      exchange.GetName(),
+					BaseCurrency:  baseCurrency,
+					TrackCurrency: trackCurrency,
 				})
 
 				err = db.Where(&model.Quote{
-					Exchange:         exchange.GetName(),
-					BaseCurrency:     baseCurrency,
-					TrackingCurrency: trackCurrency,
+					Exchange:      exchange.GetName(),
+					BaseCurrency:  baseCurrency,
+					TrackCurrency: trackCurrency,
 				}).Last(&lastQuote).Error
 				if err != nil {
-					service.Log("Error getting quotes from db", "algo")
+					if !errors.Is(err, gorm.ErrRecordNotFound) {
+						service.Log("Error getting quotes from db", "algo")
+					}
 					continue
 				}
 
@@ -80,7 +84,7 @@ func (algo AbnormallyPriceAlgorithm) AbnormalGrowth(lastQuote model.Quote, baseQ
 		Text: fmt.Sprintf(
 			baseAbnormalGrowthMessage,
 			lastQuote.Exchange,
-			lastQuote.TrackingCurrency,
+			lastQuote.TrackCurrency,
 			lastQuote.BaseCurrency,
 			baseQuote.Date.Format("02.01.2006 15:04:05"),
 			baseQuote.Value,
@@ -96,7 +100,7 @@ func (algo AbnormallyPriceAlgorithm) AbnormalGrowth(lastQuote model.Quote, baseQ
 	statistic := model.Statistic{
 		AlgorithmName: algo.GetName(),
 		BaseCurrency:  lastQuote.BaseCurrency,
-		TrackCurrency: lastQuote.TrackingCurrency,
+		TrackCurrency: lastQuote.TrackCurrency,
 		Exchange:      lastQuote.Exchange,
 		Result:        fmt.Sprintf("%f", diff),
 		Action:        "Sent telegram message",
@@ -117,7 +121,7 @@ func (algo AbnormallyPriceAlgorithm) AbnormalDrop(lastQuote model.Quote, baseQuo
 		Text: fmt.Sprintf(
 			baseAbnormalDropMessage,
 			lastQuote.Exchange,
-			lastQuote.TrackingCurrency,
+			lastQuote.TrackCurrency,
 			lastQuote.BaseCurrency,
 			baseQuote.Date.Format("02.01.2006 15:04:05"),
 			baseQuote.Value,
@@ -133,7 +137,7 @@ func (algo AbnormallyPriceAlgorithm) AbnormalDrop(lastQuote model.Quote, baseQuo
 	statistic := model.Statistic{
 		AlgorithmName: algo.GetName(),
 		BaseCurrency:  lastQuote.BaseCurrency,
-		TrackCurrency: lastQuote.TrackingCurrency,
+		TrackCurrency: lastQuote.TrackCurrency,
 		Exchange:      lastQuote.Exchange,
 		Result:        fmt.Sprintf("%f", diff),
 		Action:        "Sent telegram message",
