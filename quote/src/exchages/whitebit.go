@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
+	"crypto-bug/parser/src/service"
 	"encoding/json"
-	"log"
 	"strconv"
 	"time"
 )
@@ -29,14 +29,14 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://whitebit.com/api/v1/public/history?lastId=1&limit=1&market=" + market)
 	if err != nil {
-		log.Println("WhiteBit connection error. Message: " + err.Error())
+		service.Log("WhiteBit connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if !response.Success {
-		log.Println("WhiteBit request error. Message: " + response.Message)
+		service.Log("WhiteBit request error. Message: "+response.Message, "exchange")
 		return
 	}
 

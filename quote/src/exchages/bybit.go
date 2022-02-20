@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
+	"crypto-bug/parser/src/service"
 	"encoding/json"
-	"log"
 	"strconv"
 	"time"
 )
@@ -29,14 +29,14 @@ func (byBit ByBit) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://api.bybit.com/v2/public/tickers?symbol=" + symbol)
 	if err != nil {
-		log.Println("Bybit connection error. Message: " + err.Error())
+		service.Log("Bybit connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if response.ReturnCode != 0 {
-		log.Println("Bybit request error. Message: " + response.ReturnMessage)
+		service.Log("Bybit request error. Message: "+response.ReturnMessage, "exchange")
 		return
 	}
 

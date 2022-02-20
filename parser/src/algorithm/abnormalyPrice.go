@@ -6,7 +6,6 @@ import (
 	"crypto-bug/parser/src/service"
 	quoteConfig "crypto-bug/quote/config"
 	"fmt"
-	"log"
 )
 
 type AbnormallyPriceAlgorithm struct {
@@ -38,13 +37,13 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 					TrackingCurrency: trackCurrency,
 				}).Last(&lastQuote).Error
 				if err != nil {
-					log.Println("Error getting quotes from db")
+					service.Log("Error getting quotes from db", "algo")
 					continue
 				}
 
 				err = query.Not("id = ?", lastQuote.ID).Order("id desc").Find(&quotes).Error
 				if err != nil {
-					log.Println("Error getting quotes from db")
+					service.Log("Error getting quotes from db", "algo")
 					continue
 				}
 
