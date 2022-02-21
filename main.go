@@ -4,7 +4,7 @@ import (
 	"crypto-bug/config"
 	"crypto-bug/migrations"
 	"crypto-bug/parser"
-	"crypto-bug/parser/src/parserService"
+	"crypto-bug/parser/src/service"
 	"crypto-bug/quote"
 	"os"
 	"time"

@@ -3,7 +3,7 @@ package algorithm
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/parserService"
+	"crypto-bug/parser/src/service"
 	"crypto-bug/quote"
 	quoteConfig "crypto-bug/quote/config"
 	"errors"

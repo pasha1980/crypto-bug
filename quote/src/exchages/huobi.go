@@ -3,7 +3,7 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/parserService"
+	parserService "crypto-bug/parser/src/service"
 	"crypto-bug/quote/src/service"
 	"encoding/json"
 	"strings"

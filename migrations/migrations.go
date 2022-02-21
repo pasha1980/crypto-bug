@@ -3,7 +3,7 @@ package migrations
 import (
 	"crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/parserService"
+	"crypto-bug/parser/src/service"
 )
 
 func Migrate() {
