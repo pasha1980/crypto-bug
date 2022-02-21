@@ -4,6 +4,7 @@ import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
 	"crypto-bug/parser/src/service"
+	"crypto-bug/quote"
 	"encoding/json"
 	"strconv"
 	"time"
@@ -14,13 +15,19 @@ type WhiteBit struct {
 
 type WhiteBitResponse struct {
 	Success bool                   `json:"success"`
-	Message string                 `json:"message"`
+	Message WhiteBitMessage        `json:"message"`
 	Result  []WhiteBitMarketResult `json:"result"`
+}
+
+type WhiteBitMessage struct {
+	Market []string `json:"market"`
 }
 
 type WhiteBitMarketResult struct {
 	Price string `json:"price"`
 }
+
+const whiteBitReturnMessageNeedException = "Market is not available."
 
 func (whiteBit WhiteBit) Save(track string, base string) {
 	var response WhiteBitResponse
@@ -36,13 +43,16 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if !response.Success {
-		service.Log("WhiteBit request error. Message: "+response.Message, "exchange")
+		if response.Message.Market[0] == whiteBitReturnMessageNeedException {
+			quote.ProcessException(whiteBit, track, base)
+		}
+		service.Log("WhiteBit request error"+response.Message.Market[0], "exchange")
 		return
 	}
 
 	priceFloat, _ := strconv.ParseFloat(response.Result[0].Price, 64)
 
-	quote := model.Quote{
+	newQuote := model.Quote{
 		Exchange:      whiteBit.GetName(),
 		Date:          time.Now(),
 		BaseCurrency:  base,
@@ -51,7 +61,7 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 	}
 
 	db := rootConfig.Database
-	db.Save(&quote)
+	db.Save(&newQuote)
 }
 
 func (whiteBit WhiteBit) GetName() string {

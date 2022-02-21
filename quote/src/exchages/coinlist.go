@@ -4,7 +4,9 @@ import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
 	"crypto-bug/parser/src/service"
+	"crypto-bug/quote"
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -21,6 +23,8 @@ type CoinistTrade struct {
 	Price string `json:"price"`
 }
 
+const coinlistReturnMessageNeedException = "Symbol not found: %s"
+
 func (coinist Coinlist) Save(track string, base string) {
 	var response CoinlistResponse
 	symbol := track + "-" + base
@@ -35,13 +39,17 @@ func (coinist Coinlist) Save(track string, base string) {
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if responseRaw.StatusCode != 200 {
+		needExceptionMessage := fmt.Sprintf(coinlistReturnMessageNeedException, symbol)
+		if response.Message == needExceptionMessage {
+			quote.ProcessException(coinist, track, base)
+		}
 		service.Log("Coinlist request error. Message: "+response.Message, "exchange")
 		return
 	}
 
 	priceFloat, _ := strconv.ParseFloat(response.LastTrade.Price, 64)
 
-	quote := model.Quote{
+	newQuote := model.Quote{
 		Exchange:      coinist.GetName(),
 		Date:          time.Now(),
 		BaseCurrency:  base,
@@ -50,7 +58,7 @@ func (coinist Coinlist) Save(track string, base string) {
 	}
 
 	db := rootConfig.Database
-	db.Save(&quote)
+	db.Save(&newQuote)
 }
 
 func (coinlist Coinlist) GetName() string {

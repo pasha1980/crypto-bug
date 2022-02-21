@@ -4,6 +4,7 @@ import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
 	"crypto-bug/parser/src/service"
+	"crypto-bug/quote"
 	"encoding/json"
 	"strings"
 	"time"
@@ -26,6 +27,8 @@ type HuobiData struct {
 	Price float64 `json:"price"`
 }
 
+const huobiReturnMessageNeedException = "invalid symbol"
+
 func (huobi Huobi) Save(track string, base string) {
 	var response HuobiResponse
 	symbol := strings.ToLower(track + base)
@@ -40,11 +43,14 @@ func (huobi Huobi) Save(track string, base string) {
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if response.Status != "ok" {
+		if response.Message == huobiReturnMessageNeedException {
+			quote.ProcessException(huobi, track, base)
+		}
 		service.Log("Huobi request error. Message: "+response.Message, "exchange")
 		return
 	}
 
-	quote := model.Quote{
+	newQuote := model.Quote{
 		Exchange:      huobi.GetName(),
 		Date:          time.Now(),
 		BaseCurrency:  base,
@@ -53,7 +59,7 @@ func (huobi Huobi) Save(track string, base string) {
 	}
 
 	db := rootConfig.Database
-	db.Save(&quote)
+	db.Save(&newQuote)
 }
 
 func (huobi Huobi) GetName() string {

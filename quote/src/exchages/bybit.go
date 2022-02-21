@@ -4,6 +4,7 @@ import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
 	"crypto-bug/parser/src/service"
+	"crypto-bug/quote"
 	"encoding/json"
 	"strconv"
 	"time"
@@ -22,6 +23,8 @@ type ByBitResult struct {
 	Price string `json:"last_price"`
 }
 
+const bybitReturnCodeNeedException = 10001
+
 func (byBit ByBit) Save(track string, base string) {
 	var response ByBitResponse
 	symbol := track + base
@@ -36,13 +39,16 @@ func (byBit ByBit) Save(track string, base string) {
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if response.ReturnCode != 0 {
+		if response.ReturnCode == bybitReturnCodeNeedException {
+			quote.ProcessException(byBit, track, base)
+		}
 		service.Log("Bybit request error. Message: "+response.ReturnMessage, "exchange")
 		return
 	}
 
 	priceFloat, _ := strconv.ParseFloat(response.Result[0].Price, 64)
 
-	quote := model.Quote{
+	newQuote := model.Quote{
 		Exchange:      byBit.GetName(),
 		Date:          time.Now(),
 		BaseCurrency:  base,
@@ -51,7 +57,7 @@ func (byBit ByBit) Save(track string, base string) {
 	}
 
 	db := rootConfig.Database
-	db.Save(&quote)
+	db.Save(&newQuote)
 }
 
 func (bybit ByBit) GetName() string {
