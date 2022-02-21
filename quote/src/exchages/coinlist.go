@@ -3,8 +3,10 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
+	"crypto-bug/parser/src/service"
+	"crypto-bug/quote"
 	"encoding/json"
-	"log"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -21,6 +23,8 @@ type CoinistTrade struct {
 	Price string `json:"price"`
 }
 
+const coinlistReturnMessageNeedException = "Symbol not found: %s"
+
 func (coinist Coinlist) Save(track string, base string) {
 	var response CoinlistResponse
 	symbol := track + "-" + base
@@ -28,29 +32,33 @@ func (coinist Coinlist) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://trade-api.coinlist.co/v1/symbols/" + symbol + "/summary")
 	if err != nil {
-		log.Println("Coinlist connection error. Message: " + err.Error())
+		service.Log("Coinlist connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if responseRaw.StatusCode != 200 {
-		log.Println("Coinlist request error. Message: " + response.Message)
+		needExceptionMessage := fmt.Sprintf(coinlistReturnMessageNeedException, symbol)
+		if response.Message == needExceptionMessage {
+			quote.ProcessException(coinist, track, base)
+		}
+		service.Log("Coinlist request error. Message: "+response.Message, "exchange")
 		return
 	}
 
 	priceFloat, _ := strconv.ParseFloat(response.LastTrade.Price, 64)
 
-	quote := model.Quote{
-		Exchange:         coinist.GetName(),
-		Date:             time.Now(),
-		BaseCurrency:     base,
-		TrackingCurrency: track,
-		Value:            priceFloat,
+	newQuote := model.Quote{
+		Exchange:      coinist.GetName(),
+		Date:          time.Now(),
+		BaseCurrency:  base,
+		TrackCurrency: track,
+		Value:         priceFloat,
 	}
 
 	db := rootConfig.Database
-	db.Save(&quote)
+	db.Save(&newQuote)
 }
 
 func (coinlist Coinlist) GetName() string {

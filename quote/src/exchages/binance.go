@@ -3,9 +3,11 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
+	"crypto-bug/parser/src/service"
+	"crypto-bug/quote"
 	"encoding/json"
-	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -16,16 +18,19 @@ type BinanceResponse struct {
 	Symbol  string `json:"symbol"`
 	Price   string `json:"price"`
 	Message string `json:"msg"`
+	Code    int    `json:"code"`
 }
+
+const binanceReturnCodeNeedException = -1121
 
 func (binance Binance) Save(track string, base string) {
 	var response BinanceResponse
 
-	symbol := track + base
+	symbol := strings.ToUpper(track + base)
 	client := rootConfig.Client
 	responseRaw, err := client.Get("https://api.binance.com/api/v3/ticker/price?symbol=" + symbol)
 	if err != nil {
-		log.Println("Binance connection error. Message: " + err.Error())
+		service.Log("Binance connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 
@@ -33,22 +38,25 @@ func (binance Binance) Save(track string, base string) {
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if responseRaw.StatusCode != 200 {
-		log.Println("Binance return error message: " + response.Message)
+		if responseRaw.StatusCode == 400 && response.Code == binanceReturnCodeNeedException {
+			quote.ProcessException(binance, track, base)
+		}
+		service.Log("Binance return error message: "+response.Message, "exchange")
 		return
 	}
 
 	priceFloat, _ := strconv.ParseFloat(response.Price, 64)
 
-	quote := model.Quote{
-		Exchange:         binance.GetName(),
-		Date:             time.Now(),
-		BaseCurrency:     base,
-		TrackingCurrency: track,
-		Value:            priceFloat,
+	newQuote := model.Quote{
+		Exchange:      binance.GetName(),
+		Date:          time.Now(),
+		BaseCurrency:  base,
+		TrackCurrency: track,
+		Value:         priceFloat,
 	}
 
 	db := rootConfig.Database
-	db.Save(&quote)
+	db.Save(&newQuote)
 }
 
 func (binance Binance) GetName() string {

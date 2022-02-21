@@ -4,18 +4,19 @@ import (
 	"crypto-bug/config"
 	"crypto-bug/migrations"
 	"crypto-bug/parser"
+	"crypto-bug/parser/src/service"
 	"crypto-bug/quote"
-	"log"
 	"os"
 	"time"
 )
 
 func main() {
 	config.Initialization()
+	service.Log("Application started", "info")
 	migrations.Migrate()
 	repeat, err := time.ParseDuration(os.Getenv("REPEAT_TIME"))
 	if err != nil {
-		log.Fatal(err)
+		service.Log(err.Error(), "fatal")
 	}
 
 	if repeat == 0 {
