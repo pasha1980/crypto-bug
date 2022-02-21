@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/service"
-	"crypto-bug/quote"
+	"crypto-bug/parser/src/parserService"
+	"crypto-bug/quote/src/service"
 	"encoding/json"
 	"strings"
 	"time"
@@ -36,7 +36,7 @@ func (huobi Huobi) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://api.huobi.pro/market/trade?symbol=" + symbol)
 	if err != nil {
-		service.Log("Huobi connection error. Message: "+err.Error(), "exchange")
+		parserService.Log("Huobi connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
@@ -44,9 +44,10 @@ func (huobi Huobi) Save(track string, base string) {
 
 	if response.Status != "ok" {
 		if response.Message == huobiReturnMessageNeedException {
-			quote.ProcessException(huobi, track, base)
+			service.ProcessException(huobi.GetName(), track, base)
+		} else {
+			parserService.Log("Huobi request error. Message: "+response.Message, "exchange")
 		}
-		service.Log("Huobi request error. Message: "+response.Message, "exchange")
 		return
 	}
 

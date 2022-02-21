@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/service"
-	"crypto-bug/quote"
+	"crypto-bug/parser/src/parserService"
+	"crypto-bug/quote/src/service"
 	"encoding/json"
 	"strconv"
 	"strings"
@@ -30,7 +30,7 @@ func (binance Binance) Save(track string, base string) {
 	client := rootConfig.Client
 	responseRaw, err := client.Get("https://api.binance.com/api/v3/ticker/price?symbol=" + symbol)
 	if err != nil {
-		service.Log("Binance connection error. Message: "+err.Error(), "exchange")
+		parserService.Log("Binance connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 
@@ -39,9 +39,10 @@ func (binance Binance) Save(track string, base string) {
 
 	if responseRaw.StatusCode != 200 {
 		if responseRaw.StatusCode == 400 && response.Code == binanceReturnCodeNeedException {
-			quote.ProcessException(binance, track, base)
+			service.ProcessException(binance.GetName(), track, base)
+		} else {
+			parserService.Log("Binance return error message: "+response.Message, "exchange")
 		}
-		service.Log("Binance return error message: "+response.Message, "exchange")
 		return
 	}
 

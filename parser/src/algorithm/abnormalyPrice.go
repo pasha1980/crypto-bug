@@ -3,7 +3,8 @@ package algorithm
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/service"
+	"crypto-bug/parser/src/parserService"
+	"crypto-bug/quote"
 	quoteConfig "crypto-bug/quote/config"
 	"errors"
 	"fmt"
@@ -24,7 +25,7 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 
 	db := rootConfig.Database
 
-	for _, exchange := range quoteConfig.Exchanges {
+	for _, exchange := range quote.Exchanges {
 		for _, trackCurrency := range quoteConfig.CurrenciesToTrack {
 			for _, baseCurrency := range quoteConfig.BaseCurrencies {
 				query := db.Where(&model.Quote{
@@ -40,14 +41,14 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 				}).Last(&lastQuote).Error
 				if err != nil {
 					if !errors.Is(err, gorm.ErrRecordNotFound) {
-						service.Log("Error getting quotes from db", "algo")
+						parserService.Log("Error getting quotes from db", "algo")
 					}
 					continue
 				}
 
 				err = query.Not("id = ?", lastQuote.ID).Order("id desc").Find(&quotes).Error
 				if err != nil {
-					service.Log("Error getting quotes from db", "algo")
+					parserService.Log("Error getting quotes from db", "algo")
 					continue
 				}
 
@@ -80,7 +81,7 @@ const baseAbnormalGrowthMessage = `
 
 func (algo AbnormallyPriceAlgorithm) AbnormalGrowth(lastQuote model.Quote, baseQuote model.Quote) {
 	diff := algo.CalculateDiff(lastQuote.Value, baseQuote.Value)
-	message := service.TelegramMessage{
+	message := parserService.TelegramMessage{
 		Text: fmt.Sprintf(
 			baseAbnormalGrowthMessage,
 			lastQuote.Exchange,
@@ -117,7 +118,7 @@ const baseAbnormalDropMessage = `
 
 func (algo AbnormallyPriceAlgorithm) AbnormalDrop(lastQuote model.Quote, baseQuote model.Quote) {
 	diff := algo.CalculateDiff(lastQuote.Value, baseQuote.Value)
-	message := service.TelegramMessage{
+	message := parserService.TelegramMessage{
 		Text: fmt.Sprintf(
 			baseAbnormalDropMessage,
 			lastQuote.Exchange,

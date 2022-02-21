@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/service"
-	"crypto-bug/quote"
+	"crypto-bug/parser/src/parserService"
+	"crypto-bug/quote/src/service"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -32,7 +32,7 @@ func (coinist Coinlist) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://trade-api.coinlist.co/v1/symbols/" + symbol + "/summary")
 	if err != nil {
-		service.Log("Coinlist connection error. Message: "+err.Error(), "exchange")
+		parserService.Log("Coinlist connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
@@ -41,9 +41,10 @@ func (coinist Coinlist) Save(track string, base string) {
 	if responseRaw.StatusCode != 200 {
 		needExceptionMessage := fmt.Sprintf(coinlistReturnMessageNeedException, symbol)
 		if response.Message == needExceptionMessage {
-			quote.ProcessException(coinist, track, base)
+			service.ProcessException(coinist.GetName(), track, base)
+		} else {
+			parserService.Log("Coinlist request error. Message: "+response.Message, "exchange")
 		}
-		service.Log("Coinlist request error. Message: "+response.Message, "exchange")
 		return
 	}
 

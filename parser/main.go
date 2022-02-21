@@ -1,9 +1,15 @@
 package parser
 
-import "crypto-bug/parser/config"
+import (
+	"crypto-bug/parser/src/algorithm"
+)
+
+var Algorithms = []algorithm.Algorithm{
+	algorithm.AbnormallyPriceAlgorithm{},
+}
 
 func Init() {
-	for _, algo := range config.Algorithms {
+	for _, algo := range Algorithms {
 		algo.Analyze()
 	}
 }

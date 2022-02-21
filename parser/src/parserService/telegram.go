@@ -1,4 +1,4 @@
-package service
+package parserService
 
 import (
 	"bytes"

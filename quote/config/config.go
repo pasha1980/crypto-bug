@@ -1,7 +1,6 @@
 package config
 
 import (
-	"crypto-bug/quote/src/exchages"
 	"time"
 )
 
@@ -13,16 +12,16 @@ var CurrenciesToTrack = []string{
 	"ADA",
 	"BNB",
 	"MATIC",
+	"XRP",
+	"SOL",
+	"DOT",
+	"LTC",
+	"TRX",
+	"UNI",
 }
 
 var BaseCurrencies = []string{
 	"USDT",
-}
-
-var Exchanges = []exchages.Exchange{
-	exchages.Binance{},
-	exchages.WhiteBit{},
-	exchages.Coinlist{},
-	exchages.ByBit{},
-	exchages.Huobi{},
+	"USDC",
+	"BUSD",
 }
