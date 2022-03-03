@@ -14,8 +14,8 @@ import (
 type AbnormallyPriceAlgorithm struct {
 }
 
-const growthThreshold = 30.0
-const dropThreshold = 40.0
+const growthThreshold = 20.0
+const dropThreshold = 20.0
 
 func (algo AbnormallyPriceAlgorithm) Analyze() {
 	var quotes []model.Quote
@@ -32,6 +32,7 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 					Exchange:      exchange.GetName(),
 					BaseCurrency:  baseCurrency,
 					TrackCurrency: trackCurrency,
+					IsAbnormally:  false,
 				})
 
 				err = db.Where(&model.Quote{
@@ -107,6 +108,9 @@ func (algo AbnormallyPriceAlgorithm) AbnormalGrowth(lastQuote model.Quote, baseQ
 		Action:        "Sent telegram message",
 	}
 	db.Save(&statistic)
+
+	lastQuote.IsAbnormally = true
+	db.Save(&lastQuote)
 }
 
 const baseAbnormalDropMessage = `
@@ -144,6 +148,9 @@ func (algo AbnormallyPriceAlgorithm) AbnormalDrop(lastQuote model.Quote, baseQuo
 		Action:        "Sent telegram message",
 	}
 	db.Save(&statistic)
+
+	lastQuote.IsAbnormally = true
+	db.Save(&lastQuote)
 }
 
 func (algo AbnormallyPriceAlgorithm) CalculateDiff(lastQuote float64, baseQuote float64) float64 {

@@ -12,4 +12,5 @@ type Quote struct {
 	BaseCurrency  string
 	TrackCurrency string
 	Value         float64
+	IsAbnormally  bool `gorm:"default:0;not null"`
 }
