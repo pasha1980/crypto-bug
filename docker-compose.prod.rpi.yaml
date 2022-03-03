@@ -1,19 +1,21 @@
 version: '3.4'
 services:
   mysql:
-    image: mysql:5.7
+    image: hypriot/rpi-mysql:5.5
+    restart: always
     environment:
       MYSQL_DATABASE: crypto-bug
       MYSQL_ROOT_PASSWORD: test
     volumes:
       - ./docker/db/mysql/data:/var/lib/mysql
       - ./docker/db/mysql/log:/var/log
-      - - ./docker/db/conf.d:/etc/mysql/conf.d
+      - ./docker/db/conf.d:/etc/mysql/conf.d
     ports:
       - "127.0.0.1:33065:3306"
 
-  cryptobug-main:
-    image: feraru/crypto-bug:v1.0
+  main:
+    image: feraru/crypto-bug:v1.0-rpi
+    restart: always
     env_file:
       - .env
     depends_on:
