@@ -25,7 +25,7 @@ func Init() {
 		for _, trackCurrency := range config.CurrenciesToTrack {
 			for _, baseCurrency := range config.BaseCurrencies {
 				var exception model.ExchangeException
-				err = db.Where(model.ExchangeException{
+				err = db.Where(&model.ExchangeException{
 					Exchange:      exchange.GetName(),
 					TrackCurrency: trackCurrency,
 					BaseCurrency:  baseCurrency,
