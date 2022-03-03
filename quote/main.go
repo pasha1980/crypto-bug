@@ -19,12 +19,12 @@ var Exchanges = []exchages.Exchange{
 }
 
 func Init() {
-	var exception model.ExchangeException
 	var err error
 	db := rootConfig.Database
 	for _, exchange := range Exchanges {
 		for _, trackCurrency := range config.CurrenciesToTrack {
 			for _, baseCurrency := range config.BaseCurrencies {
+				var exception model.ExchangeException
 				err = db.Where(model.ExchangeException{
 					Exchange:      exchange.GetName(),
 					TrackCurrency: trackCurrency,
