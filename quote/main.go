@@ -6,6 +6,8 @@ import (
 	"crypto-bug/quote/config"
 	"crypto-bug/quote/src/exchages"
 	"crypto-bug/quote/src/service"
+	"errors"
+	"gorm.io/gorm"
 )
 
 var Exchanges = []exchages.Exchange{
@@ -18,20 +20,20 @@ var Exchanges = []exchages.Exchange{
 
 func Init() {
 	var exception model.ExchangeException
+	var err error
 	db := rootConfig.Database
 	for _, exchange := range Exchanges {
-		exchangeObj := exchange
 		for _, trackCurrency := range config.CurrenciesToTrack {
 			for _, baseCurrency := range config.BaseCurrencies {
-				_ = db.Where(model.ExchangeException{
+				err = db.Where(model.ExchangeException{
 					Exchange:      exchange.GetName(),
 					TrackCurrency: trackCurrency,
 					BaseCurrency:  baseCurrency,
 				}).First(&exception).Error
-				if exception.ID != 0 {
+				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					continue
 				}
-				exchangeObj.Save(trackCurrency, baseCurrency)
+				exchange.Save(trackCurrency, baseCurrency)
 			}
 		}
 	}

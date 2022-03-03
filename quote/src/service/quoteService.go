@@ -4,6 +4,8 @@ import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
 	"crypto-bug/quote/config"
+	"errors"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -28,8 +30,8 @@ func ProcessException(exchange string, track string, base string) {
 	}
 
 	db := rootConfig.Database
-	_ = db.Where(&exception).First(&foundException).Error
-	if foundException.ID == 0 {
+	err := db.Where(&exception).First(&foundException).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		db.Save(&exception)
 	}
 }
