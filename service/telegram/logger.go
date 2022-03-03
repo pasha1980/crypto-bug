@@ -1,4 +1,4 @@
-package parserService
+package telegram
 
 import (
 	"log"

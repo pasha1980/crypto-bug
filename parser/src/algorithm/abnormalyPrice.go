@@ -3,9 +3,9 @@ package algorithm
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/service"
 	"crypto-bug/quote"
 	quoteConfig "crypto-bug/quote/config"
+	"crypto-bug/service/telegram"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
@@ -42,24 +42,24 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 				}).Last(&lastQuote).Error
 				if err != nil {
 					if !errors.Is(err, gorm.ErrRecordNotFound) {
-						parserService.Log("Error getting quotes from db", "algo")
+						telegram.Log("Error getting quotes from db", "algo")
 					}
 					continue
 				}
 
 				err = query.Not("id = ?", lastQuote.ID).Order("id desc").Find(&quotes).Error
 				if err != nil {
-					parserService.Log("Error getting quotes from db", "algo")
+					telegram.Log("Error getting quotes from db", "algo")
 					continue
 				}
 
 				for _, baseQuote := range quotes {
 					diff = algo.CalculateDiff(lastQuote.Value, baseQuote.Value)
 					if diff > 0 && diff >= growthThreshold {
-						algo.AbnormalGrowth(lastQuote, baseQuote)
+						algo.ActionAbnormalGrowth(lastQuote, baseQuote)
 						break
 					} else if diff < 0 && -diff >= dropThreshold {
-						algo.AbnormalDrop(lastQuote, baseQuote)
+						algo.ActionAbnormalDrop(lastQuote, baseQuote)
 						break
 					}
 				}
@@ -74,15 +74,16 @@ func (algo AbnormallyPriceAlgorithm) GetName() string {
 }
 
 const baseAbnormalGrowthMessage = `
+!АНОМАЛЬНЫЙ РОСТ!
 На бирже %s аномальный рост %s/%s
 %s цена составляла %g %s
 Последняя котировка - %g %s
 Разница - %.2f
 `
 
-func (algo AbnormallyPriceAlgorithm) AbnormalGrowth(lastQuote model.Quote, baseQuote model.Quote) {
+func (algo AbnormallyPriceAlgorithm) ActionAbnormalGrowth(lastQuote model.Quote, baseQuote model.Quote) {
 	diff := algo.CalculateDiff(lastQuote.Value, baseQuote.Value)
-	message := parserService.TelegramMessage{
+	message := telegram.TelegramMessage{
 		Text: fmt.Sprintf(
 			baseAbnormalGrowthMessage,
 			lastQuote.Exchange,
@@ -114,15 +115,16 @@ func (algo AbnormallyPriceAlgorithm) AbnormalGrowth(lastQuote model.Quote, baseQ
 }
 
 const baseAbnormalDropMessage = `
+!АНОМАЛЬНОЕ ПАДЕНИЕ!
 На бирже %s аномальное падение %s/%s
 %s цена составляла %g %s
 Последняя котировка - %g %s
 Разница - %.2f
 `
 
-func (algo AbnormallyPriceAlgorithm) AbnormalDrop(lastQuote model.Quote, baseQuote model.Quote) {
+func (algo AbnormallyPriceAlgorithm) ActionAbnormalDrop(lastQuote model.Quote, baseQuote model.Quote) {
 	diff := algo.CalculateDiff(lastQuote.Value, baseQuote.Value)
-	message := parserService.TelegramMessage{
+	message := telegram.TelegramMessage{
 		Text: fmt.Sprintf(
 			baseAbnormalDropMessage,
 			lastQuote.Exchange,

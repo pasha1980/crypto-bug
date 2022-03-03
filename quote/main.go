@@ -5,7 +5,7 @@ import (
 	"crypto-bug/model"
 	"crypto-bug/quote/config"
 	"crypto-bug/quote/src/exchages"
-	"crypto-bug/quote/src/service"
+	"crypto-bug/service/quote"
 	"errors"
 	"gorm.io/gorm"
 )
@@ -37,5 +37,5 @@ func Init() {
 			}
 		}
 	}
-	service.ClearQuotes()
+	quote.ClearQuotes()
 }

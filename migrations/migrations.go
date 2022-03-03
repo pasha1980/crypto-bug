@@ -3,7 +3,7 @@ package migrations
 import (
 	"crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/parser/src/service"
+	"crypto-bug/service/telegram"
 )
 
 func Migrate() {
@@ -16,6 +16,6 @@ func Migrate() {
 	// По мере добавления моделей добавлять новые миграции
 
 	if err != nil {
-		parserService.Log("Migration error: "+err.Error(), "migration")
+		telegram.Log("Migration error: "+err.Error(), "migration")
 	}
 }

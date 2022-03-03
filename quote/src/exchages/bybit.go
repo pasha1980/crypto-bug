@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	parserService "crypto-bug/parser/src/service"
-	"crypto-bug/quote/src/service"
+	"crypto-bug/service/quote"
+	"crypto-bug/service/telegram"
 	"encoding/json"
 	"strconv"
 	"time"
@@ -32,7 +32,7 @@ func (byBit ByBit) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://api.bybit.com/v2/public/tickers?symbol=" + symbol)
 	if err != nil {
-		parserService.Log("Bybit connection error. Message: "+err.Error(), "exchange")
+		telegram.Log("Bybit connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
@@ -40,9 +40,9 @@ func (byBit ByBit) Save(track string, base string) {
 
 	if response.ReturnCode != 0 {
 		if response.ReturnCode == bybitReturnCodeNeedException {
-			service.ProcessException(byBit.GetName(), track, base)
+			quote.ProcessException(byBit.GetName(), track, base)
 		} else {
-			parserService.Log("Bybit request error. Message: "+response.ReturnMessage, "exchange")
+			telegram.Log("Bybit request error. Message: "+response.ReturnMessage, "exchange")
 		}
 		return
 	}

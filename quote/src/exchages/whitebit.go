@@ -3,8 +3,8 @@ package exchages
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	parserService "crypto-bug/parser/src/service"
-	"crypto-bug/quote/src/service"
+	"crypto-bug/service/quote"
+	"crypto-bug/service/telegram"
 	"encoding/json"
 	"strconv"
 	"time"
@@ -36,7 +36,7 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 
 	responseRaw, err := client.Get("https://whitebit.com/api/v1/public/history?lastId=1&limit=1&market=" + market)
 	if err != nil {
-		parserService.Log("WhiteBit connection error. Message: "+err.Error(), "exchange")
+		telegram.Log("WhiteBit connection error. Message: "+err.Error(), "exchange")
 		return
 	}
 	defer responseRaw.Body.Close()
@@ -44,9 +44,9 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 
 	if !response.Success {
 		if response.Message.Market[0] == whiteBitReturnMessageNeedException {
-			service.ProcessException(whiteBit.GetName(), track, base)
+			quote.ProcessException(whiteBit.GetName(), track, base)
 		} else {
-			parserService.Log("WhiteBit request error. "+response.Message.Market[0], "exchange")
+			telegram.Log("WhiteBit request error. "+response.Message.Market[0], "exchange")
 		}
 		return
 	}
