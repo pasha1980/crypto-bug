@@ -15,7 +15,7 @@ type ExchangeDifferenceAlgorithm struct {
 
 const differenceThreshold = 5
 const exchangeDifferenceBaseMessage = `
-!РАЗНИЦА НА БИРЖАХ!
+**РАЗНИЦА НА БИРЖАХ**
 На бирже %s %s/%s - %g
 На бирже %s %s/%s - %g
 Разница - %.2f

@@ -24,7 +24,7 @@ func main() {
 	}
 
 	for range time.Tick(repeat) {
-		go quote.Init()
-		go parser.Init()
+		quote.Init()
+		parser.Init()
 	}
 }
