@@ -13,7 +13,7 @@ import (
 var Exchanges = []exchages.Exchange{
 	exchages.Binance{},
 	exchages.WhiteBit{},
-	exchages.Coinlist{},
+	//exchages.Coinlist{},
 	exchages.ByBit{},
 	exchages.Huobi{},
 }

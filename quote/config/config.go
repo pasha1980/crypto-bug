@@ -18,10 +18,17 @@ var CurrenciesToTrack = []string{
 	"LTC",
 	"TRX",
 	"UNI",
+	"1INCH",
+	"LUNA",
+	"ATOM",
+	"LINK",
+	"BCH",
 }
 
 var BaseCurrencies = []string{
 	"USDT",
 	"USDC",
 	"BUSD",
+	"TUSD",
+	"UST",
 }
