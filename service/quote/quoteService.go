@@ -3,10 +3,10 @@ package quote
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/quote/config"
 	"crypto-bug/service/telegram"
 	"errors"
 	"gorm.io/gorm"
+	"os"
 	"time"
 )
 
@@ -18,7 +18,15 @@ WHERE date < ?
 
 func ClearQuotes() {
 	db := rootConfig.Database
-	date := time.Now().Add(-(time.Hour * config.HoursToSaveQuotes))
+	timeToLive, err := time.ParseDuration(os.Getenv("SAVE_QUOTE_TIME"))
+	if err != nil {
+		telegram.Log(err.Error(), "fatal")
+	}
+
+	if timeToLive == 0 {
+		timeToLive = time.Hour
+	}
+	date := time.Now().Add(-timeToLive)
 	db.Exec(clearQuotesSql, date)
 }
 

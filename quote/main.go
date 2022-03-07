@@ -3,27 +3,18 @@ package quote
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/quote/config"
-	"crypto-bug/quote/src/exchages"
+	"crypto-bug/quoteConf"
 	"crypto-bug/service/quote"
 	"errors"
 	"gorm.io/gorm"
 )
 
-var Exchanges = []exchages.Exchange{
-	exchages.Binance{},
-	exchages.WhiteBit{},
-	//exchages.Coinlist{},
-	exchages.ByBit{},
-	exchages.Huobi{},
-}
-
 func Init() {
 	var err error
 	db := rootConfig.Database
-	for _, exchange := range Exchanges {
-		for _, trackCurrency := range config.CurrenciesToTrack {
-			for _, baseCurrency := range config.BaseCurrencies {
+	for _, exchange := range quoteConf.Exchanges {
+		for _, trackCurrency := range quoteConf.CurrenciesToTrack {
+			for _, baseCurrency := range quoteConf.BaseCurrencies {
 				var exception model.ExchangeException
 				err = db.Where(&model.ExchangeException{
 					Exchange:      exchange.GetName(),
