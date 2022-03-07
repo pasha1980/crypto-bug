@@ -13,6 +13,7 @@ var Exchanges = []Exchange{
 	//exchages.Coinlist{},
 	exchages.ByBit{},
 	exchages.Huobi{},
+	exchages.Cryptology{},
 }
 
 var CurrenciesToTrack = []string{
