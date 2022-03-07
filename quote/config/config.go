@@ -29,6 +29,6 @@ var BaseCurrencies = []string{
 	"USDT",
 	"USDC",
 	"BUSD",
-	"TUSD",
+	//"TUSD",
 	"UST",
 }
