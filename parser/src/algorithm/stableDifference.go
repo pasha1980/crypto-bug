@@ -3,7 +3,7 @@ package algorithm
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	quoteConfig "crypto-bug/quote/config"
+	"crypto-bug/quoteConf"
 	quoteService "crypto-bug/service/quote"
 	"crypto-bug/service/telegram"
 	"fmt"
@@ -23,7 +23,7 @@ const stableDifferenceMessage = `
 
 func (algo StableDifferenceAlgorithm) Analyze() {
 	db := rootConfig.Database
-	for _, trackCurrency := range quoteConfig.CurrenciesToTrack {
+	for _, trackCurrency := range quoteConf.CurrenciesToTrack {
 		err, minQuote, maxQuote := quoteService.GetMinMaxQuote(
 			quoteService.GetTrackCurrencyLastQuote(trackCurrency),
 		)

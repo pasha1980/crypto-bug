@@ -50,7 +50,7 @@ Start:
 		if response.Error.Message == cryptologyNeedExceptionMessage {
 			quote.ProcessException(cryptology.GetName(), track, base)
 		} else if response.Error.Message == cryptologyNeedToSleepMessage {
-			time.Sleep(time.Second)
+			time.Sleep(2 * time.Second)
 			goto Start
 		} else {
 			telegram.Log("Cryptology return error message: "+response.Error.Message, "exchange")
