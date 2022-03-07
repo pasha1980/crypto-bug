@@ -7,6 +7,7 @@ import (
 var Algorithms = []algorithm.Algorithm{
 	algorithm.AbnormallyPriceAlgorithm{},
 	algorithm.ExchangeDifferenceAlgorithm{},
+	algorithm.StableDifferenceAlgorithm{},
 }
 
 func Init() {
