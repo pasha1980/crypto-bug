@@ -74,7 +74,8 @@ func (algo AbnormallyPriceAlgorithm) GetName() string {
 }
 
 const baseAbnormalGrowthMessage = `
-**АНОМАЛЬНЫЙ РОСТ**
+АНОМАЛЬНЫЙ РОСТ
+
 На бирже %s аномальный рост %s/%s
 %s цена составляла %g %s
 Последняя котировка - %g %s
@@ -115,7 +116,8 @@ func (algo AbnormallyPriceAlgorithm) ActionAbnormalGrowth(lastQuote model.Quote,
 }
 
 const baseAbnormalDropMessage = `
-**АНОМАЛЬНОЕ ПАДЕНИЕ**
+АНОМАЛЬНОЕ ПАДЕНИЕ
+
 На бирже %s аномальное падение %s/%s
 %s цена составляла %g %s
 Последняя котировка - %g %s

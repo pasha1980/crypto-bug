@@ -13,9 +13,10 @@ import (
 type ExchangeDifferenceAlgorithm struct {
 }
 
-const differenceThreshold = 5
+const exchangeDifferenceThreshold = 5
 const exchangeDifferenceBaseMessage = `
-**РАЗНИЦА НА БИРЖАХ**
+РАЗНИЦА НА БИРЖАХ
+
 На бирже %s %s/%s - %g
 На бирже %s %s/%s - %g
 Разница - %.2f
@@ -46,7 +47,7 @@ func (algo ExchangeDifferenceAlgorithm) Analyze() {
 					}
 
 					diff := algo.CalculateDiff(baseQuote.Value, trackQuote.Value)
-					if diff >= differenceThreshold {
+					if diff >= exchangeDifferenceThreshold {
 
 						message := fmt.Sprintf(
 							exchangeDifferenceBaseMessage,
