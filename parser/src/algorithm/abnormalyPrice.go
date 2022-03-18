@@ -3,8 +3,7 @@ package algorithm
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/quote"
-	quoteConfig "crypto-bug/quote/config"
+	quoteConfig "crypto-bug/quoteConf"
 	"crypto-bug/service/telegram"
 	"errors"
 	"fmt"
@@ -25,7 +24,7 @@ func (algo AbnormallyPriceAlgorithm) Analyze() {
 
 	db := rootConfig.Database
 
-	for _, exchange := range quote.Exchanges {
+	for _, exchange := range quoteConfig.Exchanges {
 		for _, trackCurrency := range quoteConfig.CurrenciesToTrack {
 			for _, baseCurrency := range quoteConfig.BaseCurrencies {
 				query := db.Where(&model.Quote{

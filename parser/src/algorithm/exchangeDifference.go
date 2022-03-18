@@ -3,7 +3,7 @@ package algorithm
 import (
 	rootConfig "crypto-bug/config"
 	"crypto-bug/model"
-	"crypto-bug/quote"
+	"crypto-bug/quoteConf"
 	quote2 "crypto-bug/service/quote"
 	"crypto-bug/service/telegram"
 	"fmt"
@@ -25,10 +25,10 @@ const exchangeDifferenceBaseMessage = `
 func (algo ExchangeDifferenceAlgorithm) Analyze() {
 	processedBaseExchange := make(map[string]bool)
 	db := rootConfig.Database
-	for _, baseExchange := range quote.Exchanges {
+	for _, baseExchange := range quoteConf.Exchanges {
 		baseQuotes := quote2.GetExchangeLastQuote(baseExchange.GetName())
 
-		for _, trackExchange := range quote.Exchanges {
+		for _, trackExchange := range quoteConf.Exchanges {
 
 			if baseExchange.GetName() == trackExchange.GetName() {
 				continue
