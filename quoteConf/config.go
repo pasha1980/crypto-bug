@@ -1,6 +1,8 @@
 package quoteConf
 
-import "crypto-bug/quote/src/exchages"
+import (
+	"crypto-bug/quote/src/exchages"
+)
 
 type Exchange interface {
 	Save(track string, base string)
