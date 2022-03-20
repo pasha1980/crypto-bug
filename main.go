@@ -11,19 +11,21 @@ import (
 )
 
 func main() {
+	var err error
 	config.Initialization()
 	telegram.Log("Application started", "info")
 	migrations.Migrate()
-	repeat, err := time.ParseDuration(os.Getenv("REPEAT_TIME"))
-	if err != nil {
-		telegram.Log(err.Error(), "fatal")
+	repeat := os.Getenv("REPEAT_TIME")
+
+	var repeatDuration = time.Minute
+	if repeat != "" {
+		repeatDuration, err = time.ParseDuration(repeat)
+		if err != nil {
+			telegram.Log(err.Error(), "fatal")
+		}
 	}
 
-	if repeat == 0 {
-		repeat = time.Minute
-	}
-
-	for range time.Tick(repeat) {
+	for range time.Tick(repeatDuration) {
 		quote.Init()
 		parser.Init()
 	}
