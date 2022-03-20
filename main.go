@@ -28,7 +28,6 @@ func main() {
 	for range time.Tick(repeatDuration) {
 		quote.Init()
 		parser.Init()
+		config.Cache.Clear()
 	}
-
-	config.Cache.Clear()
 }
