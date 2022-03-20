@@ -27,4 +27,6 @@ func main() {
 		quote.Init()
 		parser.Init()
 	}
+
+	config.Cache.Clear()
 }

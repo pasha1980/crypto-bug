@@ -12,12 +12,11 @@ type TestInterface interface {
 
 var tests = []TestInterface{
 	test.CacheTest{},
+	test.UtilsTest{},
 }
 
-const finishMessage = `
-Testing completed. 
-Successfully completed %d out of %d tests
-`
+const finishMessage = `Testing completed.
+Successfully completed %d out of %d tests`
 
 func main() {
 	var success int64
