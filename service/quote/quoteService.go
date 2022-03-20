@@ -17,17 +17,19 @@ WHERE date < ?
 `
 
 func ClearQuotes() {
-	db := rootConfig.Database
-	timeToLive, err := time.ParseDuration(os.Getenv("SAVE_QUOTE_TIME"))
-	if err != nil {
-		telegram.Log(err.Error(), "fatal")
+	var err error
+	saveQuoteTime := os.Getenv("SAVE_QUOTE_TIME")
+
+	var timeToLive = time.Hour
+	if saveQuoteTime != "" {
+		timeToLive, err = time.ParseDuration(os.Getenv("SAVE_QUOTE_TIME"))
+		if err != nil {
+			telegram.Log(err.Error(), "fatal")
+		}
 	}
 
-	if timeToLive == 0 {
-		timeToLive = time.Hour
-	}
 	date := time.Now().Add(-timeToLive)
-	db.Exec(clearQuotesSql, date)
+	rootConfig.Database.Exec(clearQuotesSql, date)
 }
 
 func ProcessException(exchange string, track string, base string) {
