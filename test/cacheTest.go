@@ -2,6 +2,7 @@ package test
 
 import (
 	rootConfig "crypto-bug/config"
+	"crypto-bug/test/cacheTest2"
 	"errors"
 	"fmt"
 )
@@ -26,15 +27,24 @@ func (cacheTest CacheTest) Do() bool {
 }
 
 func (cacheTest CacheTest) TestData() error {
-	cache := rootConfig.Cache
-	cache.Set("first.data.test", 84)
-	value, found := cache.Get("first.data.test")
+	rootConfig.Cache.Set("first.data.test", 84)
+	value, found := rootConfig.Cache.Get("first.data.test")
 	if !found || value != 84 {
 		return errors.New("Not found number in one method")
 	}
 
-	cache.Set("second.data.test", 5832)
+	rootConfig.Cache.Set("second.data.test", 5832)
 	err := cacheTest.ExtraGet("second.data.test", 5832)
+	if err != nil {
+		return err
+	}
+
+	err = cacheTest2.CacheTestInDifferentPackage("second.data.test", 5832)
+	if err != nil {
+		return err
+	}
+
+	err = cacheTest2.CacheTestStruct{}.CacheTestInDifferentPackageAndStruct("second.data.test", 5832)
 	if err != nil {
 		return err
 	}
@@ -43,8 +53,7 @@ func (cacheTest CacheTest) TestData() error {
 }
 
 func (cacheTest CacheTest) ExtraGet(key string, needed interface{}) error {
-	cache := rootConfig.Cache
-	value, found := cache.Get(key)
+	value, found := rootConfig.Cache.Get(key)
 	if !found || value != needed {
 		return errors.New("Not found in extra method")
 	}
@@ -52,21 +61,30 @@ func (cacheTest CacheTest) ExtraGet(key string, needed interface{}) error {
 }
 
 func (cacheTest CacheTest) TestTemporary() error {
-	cache := rootConfig.Cache
-	cache.SetTemporary("first.temp.test", 84)
-	value, found := cache.Get("first.temp.test")
+	rootConfig.Cache.SetTemporary("first.temp.test", 84)
+	value, found := rootConfig.Cache.Get("first.temp.test")
 	if !found || value != 84 {
 		return errors.New("Not found number in one method")
 	}
 
-	cache.SetTemporary("second.temp.test", 5832)
+	rootConfig.Cache.SetTemporary("second.temp.test", 5832)
 	err := cacheTest.ExtraGet("second.temp.test", 5832)
 	if err != nil {
 		return err
 	}
 
-	cache.Clear()
-	value, found = cache.Get("first.temp.test")
+	err = cacheTest2.CacheTestInDifferentPackage("second.temp.test", 5832)
+	if err != nil {
+		return err
+	}
+
+	err = cacheTest2.CacheTestStruct{}.CacheTestInDifferentPackageAndStruct("second.temp.test", 5832)
+	if err != nil {
+		return err
+	}
+
+	rootConfig.Cache.Clear()
+	value, found = rootConfig.Cache.Get("first.temp.test")
 	if found {
 		return errors.New("Found value after clearing")
 	}
