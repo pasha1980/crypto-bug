@@ -43,7 +43,9 @@ func (whiteBit WhiteBit) Save(track string, base string) {
 	_ = json.NewDecoder(responseRaw.Body).Decode(&response)
 
 	if !response.Success {
-		if response.Message.Market[0] == whiteBitReturnMessageNeedException {
+		if len(response.Message.Market) == 0 {
+			return
+		} else if response.Message.Market[0] == whiteBitReturnMessageNeedException {
 			quote.ProcessException(whiteBit.GetName(), track, base)
 		} else {
 			telegram.Log("WhiteBit request error. "+response.Message.Market[0], "exchange")
