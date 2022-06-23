@@ -33,9 +33,15 @@ var CurrenciesToTrack = []string{
 	"TRX",
 	"UNI",
 	"1INCH",
-	"LUNA",
+	//"LUNA",
 	"ATOM",
 	"LINK",
+	"BCH",
+	"SHIB",
+	"FTT",
+	"CRO",
+	"NEAR",
+	"ALGO",
 	"BCH",
 }
 
@@ -44,5 +50,5 @@ var BaseCurrencies = []string{
 	"USDC",
 	"BUSD",
 	//"TUSD",
-	"UST",
+	//"UST",
 }
