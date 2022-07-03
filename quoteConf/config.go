@@ -1,7 +1,6 @@
 package quoteConf
 
 import (
-	"crypto-bug/quote/src/defi"
 	"crypto-bug/quote/src/exchages"
 )
 
@@ -17,7 +16,7 @@ var Exchanges = []Exchange{
 	exchages.ByBit{},
 	exchages.Huobi{},
 	//exchages.Cryptology{},
-	defi.PancakeSwap{},
+	//defi.PancakeSwap{},
 }
 
 var CurrenciesToTrack = []string{
