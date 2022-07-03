@@ -43,6 +43,7 @@ var CurrenciesToTrack = []string{
 	"NEAR",
 	"ALGO",
 	"BCH",
+	"XMR",
 }
 
 var BaseCurrencies = []string{
