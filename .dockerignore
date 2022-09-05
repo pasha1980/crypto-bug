@@ -1,2 +1,3 @@
 test/
 test.go
+push-version.sh
