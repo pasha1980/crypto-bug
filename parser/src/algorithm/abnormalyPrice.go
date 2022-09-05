@@ -13,8 +13,8 @@ import (
 type AbnormallyPriceAlgorithm struct {
 }
 
-const growthThreshold = 20.0
-const dropThreshold = 20.0
+const growthThreshold = 15.0
+const dropThreshold = 15.0
 
 func (algo AbnormallyPriceAlgorithm) Analyze() {
 	var quotes []model.Quote
