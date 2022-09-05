@@ -12,6 +12,6 @@ var Algorithms = []algorithm.Algorithm{
 
 func Init() {
 	for _, algo := range Algorithms {
-		algo.Analyze()
+		go algo.Analyze()
 	}
 }

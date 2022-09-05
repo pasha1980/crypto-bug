@@ -24,7 +24,7 @@ func Init() {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					continue
 				}
-				exchange.Save(trackCurrency, baseCurrency)
+				go exchange.Save(trackCurrency, baseCurrency)
 			}
 		}
 	}
